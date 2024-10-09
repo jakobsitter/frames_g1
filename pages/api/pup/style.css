@@ -1,0 +1,41 @@
+.grid-container {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    gap: 0; /* Remove gaps to avoid double-spacing */
+    user-select: none;
+  }
+  .grid-container #gridlines {
+    position: absolute;
+    display: none;
+  }
+  .grid-row {
+    display: flex;
+    gap: 0; /* Remove gaps to avoid double-spacing */
+  }
+  
+  .grid-cell {
+    width: 30px;
+    height: 30px;
+    background-color: black;
+    outline: 0.5px dashed gray; /* Use outline for dashed lines */
+    box-sizing: border-box; /* Ensure borders are included in the element's size */
+    font-family: 'Press Start 2P';
+    font-size: 8px;
+    position: relative;
+  }
+  
+  .grid-cell.filled {
+    background-color: blue;
+    color: black;
+    display: flex;
+    align-content: center;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .grid-cell .cellIndex {
+    color: white;
+    top: 0;
+    left: 0;
+    font-size: 5px;
+  }

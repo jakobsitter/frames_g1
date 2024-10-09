@@ -9,7 +9,7 @@ const handler = frames(async () => {
       // With query params
       <Button
         action="post"
-        target={{ pathname: "/route1", query: { foo: "bar" } }}
+        target="/frames/route1"
       >
         Go to route 1
       </Button>,
