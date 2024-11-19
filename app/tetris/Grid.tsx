@@ -1,27 +1,56 @@
 import React from 'react';
 import DraggableRandomShape from './DraggableRandomShape'
-function Grid({g, cellN, activeShape, shapes, score, state}) {
+import '../globals.css';
+import { arrayToFilename } from "./helpers/arrayToFilename";
+import {RenderSVGShape, renderShape} from './Shape'
+interface GridProps {
+  g: any; // Replace 'any' with the actual type of 'g'
+  cellN: number;
+  activeShape: any; // Replace 'any' with the actual type of 'activeShape'
+  shapes: any[]; // Replace 'any' with the actual shape type if known
+  score: number;
+  state: any; // Replace 'any' with the actual type of 'state'
+  shapesVisible: boolean;
+}
+function Grid({g, cellN, activeShape, shapes, score, state, shapesVisible}: GridProps) {
   console.log(g)
-  const rowIndex = Math.floor((cellN - 1) / 10); // Row index based on the cell number
-  const cellIndex = (cellN - 1) % 10;
+  const rowIndex = Math.floor((cellN - 1) / 7); // Row index based on the cell number
+  const cellIndex = (cellN - 1) % 7;
   console.log(cellN, rowIndex, cellIndex)
+  console.log('activeshape:', activeShape, shapes, shapes[activeShape])
 return (
   <div className='grid-wrapper'>
-    Level : {state.level} / Round: {state.round} / 12<br />
-    Players: {state.players.map((p, i) => (
-      <>{p.adr}, </>
-    ))}
-    <div className='score'>Score: {score} / Turn: {state.turn}</div>
+    <div className='stats'>
+      <div className="player-info left">
+      <p className='player'>{state.players[0]?.adr}</p>
+      <p>${state.players[0]?.score}</p>
+      </div>
+      
+      <div className="level-info">
+        <p>Round {state.round} / 12</p>
+      </div>
+      
+      <div className="player-info right">
+      <p className='player'>{state.players[1]?.adr}</p>
+      <p>${state.players[1]?.score}</p>
+      </div>
+    </div>
     <div className="grid-container">
-        {g.map((line, rowIndex) => (
-            <div key={rowIndex} className="grid-row">
-                {line.map((cell, cellIndex) => {
-                  const index = (rowIndex * 10 + cellIndex)+1; // Calculate the 1D index based on row and column
+    {activeShape !=undefined && <ActiveShapeOverlay activeShape={shapes[activeShape]} />}
+
+        {g.map((line:any, rowIndex:any) => (
+            <div key={rowIndex} 
+            className={`grid-row ${rowIndex === g.length - 1 ? 'last-row' : ''}`}>
+                {line.map((cell:any, cellIndex:any) => {
+                  const index = (rowIndex * 7 + cellIndex)+1; // Calculate the 1D index based on row and column
                   return (
                     <div 
                       key={cellIndex} 
-                      className={`grid-cell ${cell === 0 ? '' : 'filled'}`} 
-                      style={cell === 0 ? null : { background: cell[2] }}
+                      className={`grid-cell ${cell === 0 ? '' : 'filled'} ${cell[1] == 'house' && 'house'}`} 
+                      style={cell === 0 ? undefined : { 
+                        backgroundImage: 'url(http://localhost:3000'+cell[2]+')',
+                        backgroundColor: cell[4]
+                      }}
                     >
                       {cell !== 0 && cell[3]}
                       <div className="cellIndex">{index}</div> {/* Display the index */}
@@ -30,7 +59,7 @@ return (
                 })}
             </div>
         ))}
-        {rowIndex >= 0 && rowIndex < 10 && cellIndex >= 0 && cellIndex < 10 && (
+        {rowIndex >= 0 && rowIndex < 7 && cellIndex >= 0 && cellIndex < 7 && (
               <div
                   style={{
                       width: 30,
@@ -45,24 +74,41 @@ return (
               </div>
           )}
     </div>
-    <DraggableRandomShape activeShape={activeShape} shapes={shapes} customSettings={customSettings} />
+    <DraggableRandomShape shapesVisible={shapesVisible} activeShape={activeShape} shapes={shapes} customSettings={customSettings} />
     </div>
 );
 }
-function generateRandomBlockShape(minWidth, maxWidth, minHeight, maxHeight) {
+function ActiveShapeOverlay({activeShape}:{activeShape:any}) {
+  if (!activeShape?.shape) {
+    return null; // Return null if activeShape or activeShape.shape is undefined
+  }
+  console.log('active shape in overlay:', activeShape.shape)
+  const filename = arrayToFilename(activeShape.shape);
+  const imagePath = `http://localhost:3000/shapes_bitmapped2/ shape_${filename}.png`;
+  const longestSide = Math.max(
+    activeShape.shape.length, // Height of the shape
+    ...activeShape.shape.map((row: any) => row.length) // Width of the shape (find the longest row)
+  );
+  return(
+    <div className={'activeShapeOverlay'}>
+            {renderShape(activeShape.shape, 0, 0, 35, .5)}
+       </div>
+  )
+}
+function generateRandomBlockShape(minWidth:number, maxWidth:number, minHeight:number, maxHeight:number) {
     // Input validation
     if (minWidth > maxWidth || minHeight > maxHeight) {
         
         console.log("Invalid input: min dimensions must be less than or equal to max dimensions", minWidth > maxWidth || minHeight > maxHeight);
     }
   
-    function floodFill(shape, x, y, visited) {
+    function floodFill(shape:any, x:any, y:any, visited:any) {
         const height = shape.length;
         const width = shape[0].length;
         const stack = [[x, y]];
   
         while (stack.length > 0) {
-            const [cx, cy] = stack.pop();
+            const [cx, cy] = stack.pop() as [number, number];
             if (cx < 0 || cy < 0 || cx >= width || cy >= height || visited[cy][cx] || shape[cy][cx] === 0) {
                 continue;
             }
@@ -75,7 +121,7 @@ function generateRandomBlockShape(minWidth, maxWidth, minHeight, maxHeight) {
         }
     }
   
-    function isConnected(shape) {
+    function isConnected(shape:any) {
         const height = shape.length;
         const width = shape[0].length;
         const visited = Array.from({ length: height }, () => Array(width).fill(false));
@@ -86,7 +132,7 @@ function generateRandomBlockShape(minWidth, maxWidth, minHeight, maxHeight) {
                     if (!found) {
                         floodFill(shape, x, y, visited);
                         found = true;
-                    } else if (!visited[y][x]) {
+                    } else {
                         return false;
                     }
                 }
@@ -95,7 +141,7 @@ function generateRandomBlockShape(minWidth, maxWidth, minHeight, maxHeight) {
         return found;
     }
   
-    function generateShape(width, height) {
+    function generateShape(width:any, height:any) {
         const shape = Array.from({ length: height }, () => Array(width).fill(0));
   
         // Increase the range for number of cells to fill
@@ -105,8 +151,8 @@ function generateRandomBlockShape(minWidth, maxWidth, minHeight, maxHeight) {
         let y = Math.floor(Math.random() * height);
   
         while (filledCells < numCellsToFill) {
-            if (shape[y][x] === 0) {
-                shape[y][x] = 1;
+            if (shape?[y][x] === 0 : undefined) {
+                shape?[y][x] = 1 : undefined;
                 filledCells++;
             }
             
@@ -150,20 +196,20 @@ function generateRandomBlockShape(minWidth, maxWidth, minHeight, maxHeight) {
         return shape;
     }
   
-    function trimShape(shape) {
+    function trimShape(shape:any) {
       // Remove empty rows from the top
-      while (shape.length > 0 && shape[0].every(cell => cell === 0)) {
+      while (shape.length > 0 && shape[0].every((cell:any) => cell === 0)) {
         shape.shift();
       }
       // Remove empty rows from the bottom
-      while (shape.length > 0 && shape[shape.length - 1].every(cell => cell === 
+      while (shape.length > 0 && shape[shape.length - 1].every((cell:any) => cell === 
     0)) {
         shape.pop();
       }
       // Remove empty columns from the left
       let colIndex = 0;
       while (colIndex < shape[0].length) {
-        if (!shape.every(row => row[colIndex] === 0)) {
+        if (!shape.every((row:any) => row[colIndex] === 0)) {
           break;
         }
         colIndex++;
@@ -175,7 +221,7 @@ function generateRandomBlockShape(minWidth, maxWidth, minHeight, maxHeight) {
       // Remove empty columns from the right
       colIndex = shape[0].length - 1;
       while (colIndex >= 0) {
-        if (!shape.every(row => row[colIndex] === 0)) {
+        if (!shape.every((row:any) => row[colIndex] === 0)) {
           break;
         }
         colIndex--;
@@ -219,9 +265,9 @@ function generateRandomBlockShape(minWidth, maxWidth, minHeight, maxHeight) {
         "growShapes": true,
         "movesPerLevel": 12
       };
-    const gridSize = 10;
+    const gridSize = 7;
     
-    function newGrid(initShapes:Number, customSettings:Object) {
+    function newGrid(initShapes:number, customSettings:object) {
         let nGrid = initGrid();
         const p = placeRandomShapes(nGrid, initShapes, customSettings); // Place 5 random shapes on the grid
         
@@ -233,12 +279,12 @@ function generateRandomBlockShape(minWidth, maxWidth, minHeight, maxHeight) {
         for (let i = 0; i < gridSize; i++) {
           nGrid[i] = [];
           for (let j = 0; j < gridSize; j++) {
-            nGrid[i][j] = 0; // 0 means no block
+            nGrid?[i][j] = 0 : undefined // 0 means no block
           }
         }
         return nGrid;
       }
-      const placeRandomShapes = (grid, totalCells, customSettings) => {
+      const placeRandomShapes = (grid:any, totalCells:any, customSettings:any) => {
         let filledCells = 0;
         let boardVal = 0;
         while (filledCells < totalCells) {
@@ -254,11 +300,10 @@ function generateRandomBlockShape(minWidth, maxWidth, minHeight, maxHeight) {
             customSettings.randomShapeMinHeight, 
             Math.min(customSettings.randomShapeMaxHeight, Math.ceil(maxShapeSize / customSettings.randomShapeMinWidth))
           );
-      
-          shape = shape.shape;
+          const shape2 = shape.shape
           // Count the number of cells occupied by the shape
-          const shapeCellCount = shape.reduce((total, row) => 
-            total + row.filter(cell => cell === 1).length, 0
+          const shapeCellCount = shape2.reduce((total:any, row:any) => 
+            total + row.filter((cell:any) => cell === 1).length, 0
           );
       
           // If the shape has more cells than we need, discard it and try again
@@ -269,9 +314,9 @@ function generateRandomBlockShape(minWidth, maxWidth, minHeight, maxHeight) {
       
           // Check if the shape can be placed at the random position
           let canPlace = true;
-          for (let i = 0; i < shape.length; i++) {
-            for (let j = 0; j < shape[i].length; j++) {
-              if (shape[i][j] === 1) {
+          for (let i = 0; i < shape2.length; i++) {
+            for (let j = 0; j < shape2[i].length; j++) {
+              if (shape2[i][j] === 1) {
                 const newX = x + j;
                 const newY = y + i;
                 if (newY >= gridSize || newX >= gridSize || newY < 0 || newX < 0 || grid[newY][newX] !== 0) {
@@ -285,9 +330,9 @@ function generateRandomBlockShape(minWidth, maxWidth, minHeight, maxHeight) {
       
           // Place the shape if it can fit
           if (canPlace) {
-            for (let i = 0; i < shape.length; i++) {
-              for (let j = 0; j < shape[i].length; j++) {
-                if (shape[i][j] === 1) {
+            for (let i = 0; i < shape2.length; i++) {
+              for (let j = 0; j < shape2[i].length; j++) {
+                if (shape2[i][j] === 1) {
                   //random value number
                   const rNum = Math.floor(Math.random() * 100);
                   const newX = x + j;

@@ -4,9 +4,6 @@ import { FramesMiddleware } from "frames.js/types";
 import { imagesWorkerMiddleware } from "frames.js/middleware/images-worker"; 
 import {fetchImage} from '../fetchImage'
 import {newGrid} from '../GridHelpers'
-import { stateManager } from '../stateManager';
-import { newGame } from "../socketConnection";
-import { checkShapeState } from "../helpers/checkShapeState";
 import { farcasterHubContext } from "frames.js/middleware";
  
 
@@ -90,7 +87,9 @@ export const frames = createFrames(
     level: 0,
     round: 0,
     turn: '',
-    activePlayer: ''
+    activePlayer: '',
+    shapesVisible: false
+
   },
   middleware: [
     imagesWorkerMiddleware({

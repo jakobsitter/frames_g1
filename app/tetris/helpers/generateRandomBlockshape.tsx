@@ -100,40 +100,31 @@ export function generateRandomBlockShape(minWidth, maxWidth, minHeight, maxHeigh
     }
   
     function trimShape(shape) {
-      // Remove empty rows from the top
-      while (shape.length > 0 && shape[0].every(cell => cell === 0)) {
-        shape.shift();
-      }
-      // Remove empty rows from the bottom
-      while (shape.length > 0 && shape[shape.length - 1].every(cell => cell === 
-    0)) {
-        shape.pop();
-      }
-      // Remove empty columns from the left
-      let colIndex = 0;
-      while (colIndex < shape[0].length) {
-        if (!shape.every(row => row[colIndex] === 0)) {
-          break;
+        // Remove empty rows from the top
+        while (shape.length > 0 && shape[0].every(cell => cell === 0)) {
+            shape.shift();
         }
-        colIndex++;
-      }
-      for (let i = 0; i < shape.length; i++) {
-        shape[i].slice(colIndex).shift();
-      }
-      
-      // Remove empty columns from the right
-      colIndex = shape[0].length - 1;
-      while (colIndex >= 0) {
-        if (!shape.every(row => row[colIndex] === 0)) {
-          break;
+        // Remove empty rows from the bottom
+        while (shape.length > 0 && shape[shape.length - 1].every(cell => cell === 0)) {
+            shape.pop();
         }
-        colIndex--;
-      }
-      for (let i = 0; i < shape.length; i++) {
-        shape[i].slice(0, colIndex + 1).pop();
-      }
-    
-      return shape;
+
+        // Remove empty columns from the left
+        let leftIndex = 0;
+        while (leftIndex < shape[0].length && shape.every(row => row[leftIndex] === 0)) {
+            leftIndex++;
+        }
+
+        // Remove empty columns from the right
+        let rightIndex = shape[0].length - 1;
+        while (rightIndex >= 0 && shape.every(row => row[rightIndex] === 0)) {
+            rightIndex--;
+        }
+
+        // Trim columns by slicing each row from leftIndex to rightIndex + 1
+        shape = shape.map(row => row.slice(leftIndex, rightIndex + 1));
+        
+        return shape;
     }
   
     let shape;

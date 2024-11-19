@@ -1,7 +1,9 @@
+var randomColor = require('randomcolor');
 import { kv } from "@vercel/kv";
 import {newGrid} from '../GridHelpers'
 import { checkShapeState } from "../helpers/checkShapeState";
 const MAX_ROUNDS = 12;
+const INIT_SCORE = 500;
 type Game = {
     gameId: string;
     grid: any;
@@ -13,12 +15,14 @@ type Game = {
     players: Array<{
         adr: any;
         score: number;
-        status: 'pending'
+        status: 'pending',
+        color: string
     }>;
 };
+
 export async function getGame(gameId: string, adr: any) {
     // Retrieve the game from your key-value store
-    let game = await kv.get(gameId);
+    let game = await kv.get(gameId) as Game | null;
     
     if (game) {
         console.log('game exists');
@@ -32,6 +36,7 @@ export async function getGame(gameId: string, adr: any) {
                 adr,
                 score: 0,
                 status: 'pending',
+                color: randomColor({luminosity: 'dark'})
             });
 
             // Update the game with the new player
@@ -61,8 +66,9 @@ export async function getGame(gameId: string, adr: any) {
         round,
         players: [{
             adr,
-            score: 0,
-            status: 'pending'
+            score: INIT_SCORE,
+            status: 'pending',
+            color: randomColor({ luminosity: 'dark' })
         }],
     };
 
@@ -72,6 +78,11 @@ export async function getGame(gameId: string, adr: any) {
 
     return newGame;
 }
+export async function modifyScore(gameId:string, playerAddress:string, score:number) {
+    const modifyScore = createScoreModifier(gameId);
+    // Modify a player's score by +50
+    await modifyScore(playerAddress, score);
+}
 export async function getGameState(gameId:string) {
     const currentGame = await kv.get<Game>(gameId);
     return currentGame;
@@ -79,13 +90,13 @@ export async function getGameState(gameId:string) {
 export async function setGrid(gameId:string, grid:any) {
     const setNewGrid = await updateGameProperty(gameId, {grid: grid})
     console.log('setting grid:', setNewGrid)
-    return setNewGrid.grid;
+    return setNewGrid?.grid;
 }
 export async function updateShapes(gameId:string, shapes:any) {
     const checkShapes = checkShapeState(shapes);
     const setNewShapes = await updateGameProperty(gameId, {shapes: checkShapes})
     console.log('setting shapes:', setNewShapes)
-    return setNewShapes.shapes;
+    return setNewShapes?.shapes;
 }
 export async function levelHandler(gameId:string) {
     const currentGame = await kv.get<Game>(gameId);
@@ -101,15 +112,15 @@ export async function levelHandler(gameId:string) {
 
     }
      // Switch turn to the other player
-     const currentTurn = currentGame.turn;
-     const players = currentGame.players;
+     const currentTurn = currentGame?.turn;
+     const players = currentGame?.players;
  
      // Find the next player (the player who is not currently the one in turn)
-     let nextPlayer = players.find(player => player.adr !== currentTurn)?.adr;
+     let nextPlayer = players?.find(player => player.adr !== currentTurn)?.adr;
  
      if (!nextPlayer) {
          console.error('Unable to switch turn, no other player found.');
-         nextPlayer = currentGame.turn;
+         nextPlayer = currentGame?.turn;
      }
  
      // Update the game properties
@@ -148,3 +159,55 @@ async function updateGameProperty(gameId: string, newProperty: Partial<Game>): P
   
     return updatedGame;
   }
+
+
+  export function createScoreModifier(gameId: string) {
+    return async function modifyScore(adr: any, scoreChange: number): Promise<Game | null> {
+        // Retrieve the game from KV store
+        const game = await kv.get<Game>(gameId);
+        
+        // Check if the game exists
+        if (!game) {
+            console.error('Game not found!');
+            return null;
+        }
+
+        // Find the player in the players array
+        const player = game.players.find(player => player.adr === adr);
+
+        if (!player) {
+            console.error('Player not found in game!');
+            return null;
+        }
+
+        // Update the player's score
+        player.score += scoreChange;
+
+        // Save the updated game state back to KV
+        const updatedGame = await kv.set(gameId, game);
+        console.log(`Updated score for player ${adr}:`, player.score);
+
+        return game;
+    };
+}
+export async function getPlayerColor(gameId: string, adr: any): Promise<string | null> {
+    // Retrieve the game from the key-value store
+    const game = await kv.get<Game>(gameId);
+
+    // Check if the game exists
+    if (!game) {
+        console.error('Game not found!');
+        return null;
+    }
+
+    // Find the player in the players array
+    const player = game.players.find(player => player.adr === adr);
+
+    // If player exists, return their color
+    if (player) {
+        return player.color;
+    } else {
+        console.error('Player not found in game!');
+        return null;
+    }
+}

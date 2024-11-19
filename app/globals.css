@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Press+Start+2P&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -65,20 +67,34 @@
     --ring: 212.7 26.8% 83.9%;
   }
 }
- 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}.grid-container {
+.grid-wrapper {
+  width: 300px;
+  height: 300px;
+  zoom: 6;
+  overflow: hidden;
+  background: black;
+  position: relative;
+  color: white;
+  font-size: 6px;
+  background-image: radial-gradient(circle, #333 0.2px, transparent 0.2px);
+  background-size: 1.5px 1.5px;
   display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.grid-wrapper .stats {
+  display: flex;
+  flex: ;
+}
+.grid-container {
+  display: inline-flex;
   flex-direction: column;
   position: relative;
   gap: 0; /* Remove gaps to avoid double-spacing */
   user-select: none;
+  flex: 0;
+  text-align: center;
+  margin: 0 auto;
 }
 .grid-container #gridlines {
   position: absolute;
@@ -88,29 +104,177 @@
   display: flex;
   gap: 0; /* Remove gaps to avoid double-spacing */
 }
-
 .grid-cell {
-  width: 30px;
-  height: 30px;
-  background-color: black;
-  outline: 0.5px dashed gray; /* Use outline for dashed lines */
+  width: 35px;
+  height: 35px;
   box-sizing: border-box; /* Ensure borders are included in the element's size */
   font-family: 'Press Start 2P';
-  font-size: 8px;
+  font-size: 5px;
   position: relative;
+  border-right: 0.5px dashed gray;
+  border-bottom: 0.5px dashed gray;
 }
 
+/* Handle the last column and last row separately to complete the borders */
+.grid-cell:nth-child(7n) {
+  border-right: none; /* Remove right border from the last column */
+}
+.grid-row {
+
+}
+.grid-row.last-row .grid-cell {
+  border-bottom: none;
+}
 .grid-cell.filled {
   background-color: black;
-  color: black;
+  color: red;
   display: flex;
   align-content: center;
   flex-wrap: wrap;
   justify-content: center;
+  background-size: contain;
+  text-shadow: .25px 0.25px white;
+}
+.grid-cell.filled.house {
+  background-color: #282828;
 }
 .grid-cell .cellIndex {
   color: white;
+  top: 2px;
+  left: 2px;
+  font-size: 4px;
+  position: absolute;
+  font-family: 'Press Start 2P';
+}
+.grid-cell.filled .cellIndex {
+  color: black;
+}
+.grid-cell::after {
+  content: "";
+  width: 2px;
+  height: 2px;
+  background-color: red;
+  border-radius: 100%;
+  position: absolute;
+  top: -1px;
+  left: -1px;
+}
+.draggableShapes-container {
+  z-index: 99999;
+  background: ;
+  display: ;
+  grid-template-columns: repeat(3, 1fr);
+
+  width: 100%;
+  color: white;
+  flex: 1;
+  position: absolute;
+  background: rgb(31 31 31 / 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  backdrop-filter: blur(5px);
+  width: 80%;
+  border-radius: 5px;
+  border: 0.5px gray dashed;
+  box-shadow: 0px 0px 10px #000000;
+  display: none;
+}
+.draggableShapes-container.visible {
+  display: grid;
+}
+.shape {
+  text-align: left;
+  line-height: 0;
+  position: relative;
+
+}
+.shape img, .shape svg {
+}
+.shape svg {
+  position: absolute;
   top: 0;
   left: 0;
+}
+.shape_outer {
+  align-items: center;
+  justify-content: end;
+  display: flex;
+  flex-direction: column;
+  border-left: gray 0.5px dashed;
+  padding: 15px;
+}
+.shape_outer:first-of-type {
+  border: 0;
+}
+.shape_outer .tooltip {
+  height: auto;
+  clear: both;
+  position: ;
+  bottom: 0;
+  font-family: 'Luminari';
+  font-size: 6px;
+  text-align: center;
+  margin-top: 10px;
+}
+.shape_outer .tooltip .number{
+  border: 0.25px #fff solid;
+  border-radius: 2px;
+  padding: 5px;
+  line-height: 100%;
   font-size: 5px;
+  font-family: 'Press Start 2P';
+  margin-bottom: 5px;
+}
+.shape .inner {
+  transform-origin: center;
+}
+.active {
+  border: 5px red solid;
+}
+.score {
+  color: white;
+  font-family: 'Press Start 2P';
+  font-size: 6px;
+  position: absolute;
+  transform: rotate(90deg) translate(-50%, -50%);
+  transform-origin: top left;
+  top: 50%;
+  left: 20px;
+}
+.stats {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 5px;
+  color: white;
+  font-family: 'Luminari';
+  font-weight: 100;
+}
+.level-info {
+  text-align: center;
+  font-size: 5px;
+
+}
+.player-info.left {
+  text-align: left;
+}
+.player-info.right {
+  text-align: right;
+}
+.player-info p {
+  font-size: 5px;
+  margin: 0;
+  font-weight: ;
+}
+.activeShapeOverlay {
+  display: inline-block;
+  position: absolute;
+  left: 0%;
+  top: 0%;
+  overflow: hidden;
+  z-index:9999;
+}
+.activeShapeOverlay > div > div {
+  background-color: aqua;
 }

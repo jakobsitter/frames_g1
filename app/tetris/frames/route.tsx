@@ -4,7 +4,7 @@ import { Button } from "frames.js/next";
 import {fetchImage} from '../fetchImage'
 import {getGame} from '../util/getGame'
 import { kv } from "@vercel/kv";
-const handler = frames(async (ctx) => {
+const handler = frames(async (ctx:any) => {
   const currentState = ctx.state;
   let screen = 'userInput';
   let getStateR;
@@ -32,7 +32,7 @@ const handler = frames(async (ctx) => {
       </div>
     ),
     imageOptions: { aspectRatio: '1:1'},
-    textInput: !readyToPlay ? screen == 'userInput' ? 'Enter UserId' : 'Enter GameID' : null,
+    textInput: !readyToPlay ? screen == 'userInput' ? 'Enter UserId' : 'Enter GameID' : undefined,
     state: updatedState,
     buttons: [
       // With query params
@@ -55,7 +55,7 @@ const handler = frames(async (ctx) => {
         action="post"
         target={{ query: { checkGame: "true" }, pathname: "/frames/chooseShape" }}
       >
-        Play
+        Pick Shape
       </Button>
     ],
   };

@@ -1,4 +1,4 @@
-export function checkLines(g, gridSize) {
+export function checkLines(g:any, gridSize:any) {
     let linesCleared = 0;
     let modgrid = [...g];
     let houseScore = 0;
@@ -6,7 +6,7 @@ export function checkLines(g, gridSize) {
     // Initialize the scores for each player
   
     // Function to award points to the last player
-    const awardPointsToLastPlayer = (points) => {
+    const awardPointsToLastPlayer = (points:any) => {
         addToScore += points;
     };
   

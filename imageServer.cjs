@@ -1,10 +1,23 @@
 const express = require('express');
 const puppeteer = require('puppeteer');
 const bodyParser = require('body-parser');
-
+const fs = require('fs');
+const path = require('path');
+const sharp = require('sharp');
 const app = express();
 const port = process.env.PORT || 3001;
+const compressImage = async (buffer, maxSize) => {
+  let quality = 100; // Start high and reduce
+  let compressedBuffer = buffer;
 
+  while (compressedBuffer.length > maxSize && quality > 10) {
+    compressedBuffer = await sharp(buffer)
+      .jpeg({ quality })
+      .toBuffer();
+    quality -= 10; // Lower quality and try again
+  }
+  return compressedBuffer;
+};
 // Use bodyParser to parse JSON request bodies
 app.use(bodyParser.json());
 
@@ -16,7 +29,7 @@ let browserPromise = puppeteer.launch({
 
 app.post('/screenshot', async (req, res) => {
   const { html } = req.body; // Get HTML content from the request body
-
+  
   if (!html) {
     res.status(400).json({ error: 'HTML content is required' });
     return;
@@ -26,151 +39,40 @@ app.post('/screenshot', async (req, res) => {
     // Reuse the browser instance
     const browser = await browserPromise;
     const page = await browser.newPage();
-
+    const cssFilePath = path.join(__dirname, 'app/globals.css'); // Replace 'styles.css' with your CSS file path
+    const cssContent = fs.readFileSync(cssFilePath, 'utf8');
     // Set the HTML content
     await page.setContent(html, { waitUntil: 'domcontentloaded' });
 
-    // Add your style tags
-    await page.addStyleTag({
-      url: 'https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400..700&display=swap',
+    // Preload fonts before adding style tags
+    await page.evaluate(() => {
+      const preloadLink = document.createElement('link');
+      preloadLink.href = 'https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Press+Start+2P&display=swap';
+      preloadLink.rel = 'preload';
+      preloadLink.as = 'style';
+      document.head.appendChild(preloadLink);
     });
     await page.addStyleTag({
-      content: `
-        @font-face {
-          font-family: 'Press Start 2P';
-          font-style: normal;
-          font-weight: 400;
-          font-display: swap;
-          src: url(https://fonts.gstatic.com/s/pressstart2p/v15/e3t4euO8T-267oIAQAu6jDQyK3nWivNm4I81PZQ.woff2) format('woff2');
-          unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
-        }
-        .grid-wrapper {
-          width: 300px;
-          height: 300px;
-          zoom: 5;
-          overflow: hidden;
-          background: black;
-          position: relative;
-          color: white;
-          font-size: 6px;
-        }
-        .grid-container {
-          display: inline-flex;
-          flex-direction: column;
-          position: relative;
-          gap: 0; /* Remove gaps to avoid double-spacing */
-          user-select: none;
-          transform: scale(0.7);
-          transform-origin: center top;
-        }
-        .grid-container #gridlines {
-          position: absolute;
-          display: none;
-        }
-        .grid-row {
-          display: flex;
-          gap: 0; /* Remove gaps to avoid double-spacing */
-        }
-        .grid-cell {
-          width: 30px;
-          height: 30px;
-          background-color: black;
-          outline: 0.5px dashed gray; /* Use outline for dashed lines */
-          box-sizing: border-box; /* Ensure borders are included in the element's size */
-          font-family: 'Press Start 2P';
-          font-size: 6px;
-          position: relative;
-        }
-        .grid-cell.filled {
-          background-color: black;
-          color: black;
-          display: flex;
-          align-content: center;
-          flex-wrap: wrap;
-          justify-content: center;
-        }
-        .grid-cell .cellIndex {
-          color: white;
-          top: 1px;
-          left: 1px;
-          font-size: 5px;
-          position: absolute;
-          font-family: 'Kode Mono';
-        }
-        .grid-cell.filled .cellIndex {
-          color: black;
-        }
-        .draggableShapes-container {
-          z-index: 99999;
-          position: absolute;
-          bottom: 0px;
-          left: 0;
-          background: ;
-          display: flex;
-          flex-wrap: wrap;
-          width: 100%;
-          height: 100px;
-          color: white;
-        }
-        .shape {
-          text-align: left;
-          line-height: 0;
-          position: absolute;
-        }
-        .shape_outer {
-          width: calc(33.3%);
-          align-items: center;
-          justify-content: center;
-          display: flex;
-          zoom: 0.3;
-        }
-        .shape_outer .tooltip {
-          height: auto;
-          clear: both;
-          position: absolute;
-          bottom: 0;
-          font-family: 'Press Start 2P';
-          font-size: 20px;
-        }
-        .shape .inner {
-          transform-origin: center;
-        }
-        .active {
-          border: 5px red solid;
-        }
-        .score {
-          color: white;
-          font-family: 'Press Start 2P';
-          font-size: 6px;
-          position: absolute;
-          transform: rotate(90deg) translate(-50%, -50%);
-          transform-origin: top left;
-          top: 50%;
-          left: 20px;
-        }
-      `,
+      content: cssContent,
     });
-
-    // Capture a screenshot
+    // Capture a compressed screenshot
     const el = await page.$('div.grid-wrapper');
     if (!el) {
       throw new Error('Element div.grid-wrapper not found in the page.');
     }
-    const screenshot = await el.screenshot({
-      type: 'png',
-      encoding: 'base64', // specify the file extension
-    });
-
+    const screenshotBuffer = await el.screenshot({ type: 'jpeg', quality: 100 });
+    const finalBuffer = await compressImage(screenshotBuffer, 200 * 1024); // Target: 200 KB
     // Close the page instead of the browser
     await page.close();
 
     // Send the response
-    res.json({ image: `data:image/png;base64,${screenshot}` });
+    res.json({ image: `data:image/jpeg;base64,${finalBuffer.toString('base64')}` });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'An error occurred while taking a screenshot' });
   }
 });
+
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);

@@ -3,20 +3,21 @@ import { frames } from "../frames";
 import { Button } from "frames.js/next";
 import {fetchImage} from '../../fetchImage'
 import {getGameState} from '../../util/getGame'
-export const POST = frames(async (ctx) => {
+
+export const POST = frames(async (ctx:any) => {
   const currentState = ctx.state;
   const gameState = await getGameState(currentState.gameId)
   const updatedState = {
     ...currentState,
     ...gameState,
     piece: ctx.message?.inputText,
-    //grid: ctx.searchParams.updateGrid ? gameState.grid : currentState.grid
+    shapesVisible: currentState.turn == currentState.activePlayer ? true : false
   };
   return {
     image: await fetchImage(updatedState),
     imageOptions: { aspectRatio: '1:1'},
     state: updatedState,
-    textInput: updatedState.turn == updatedState.activePlayer ? 'Choose Shape 1-3' : null,
+    textInput: updatedState.turn == updatedState.activePlayer ? 'Choose Shape 1-3' : undefined,
     buttons: [
       // With query params
       updatedState.turn == updatedState.activePlayer ? 

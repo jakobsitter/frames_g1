@@ -5,7 +5,7 @@ import {fetchImage} from '../../fetchImage'
 import { rotateShapeArray } from "../../helpers/rotateShapeArray";
 import {setGrid,updateShapes,getGameState} from '../../util/getGame'
 
-export const POST = frames(async (ctx) => {
+export const POST = frames(async (ctx:any) => {
   const currentState = ctx.state;
   let newShapes = currentState.shapes;
   if(ctx.searchParams.rotateActive) {
@@ -20,10 +20,12 @@ export const POST = frames(async (ctx) => {
   const updatedState = {
     ...currentState,
     ...gameState,
-    pos: {x: currentState.pos.x, y: currentState.pos.y-30},
+//    pos: {x: currentState.pos.x, y: currentState.pos.y-30},
     //piece: ctx.message?.inputText,
     shapes: newShapes,
-    activeShape: ctx.searchParams.shapeChosen ? Number(ctx.message?.inputText) - 1 : currentState.activeShape
+    activeShape: ctx.searchParams.shapeChosen ? Number(ctx.message?.inputText) - 1 : currentState.activeShape,
+    shapesVisible: false
+
   };
 const imageData = {
     grid: updatedState.grid,
@@ -50,6 +52,12 @@ const imageData = {
       target={{ query: { rotateActive: "true" }, pathname: "/frames/move" }}
       >
       Rotate Shape
+    </Button>,
+    <Button
+    action="post"
+    target={{ query: { rotateActive: "true" }, pathname: "/frames/chooseShape" }}
+    >
+      Choose Another
     </Button>
     ],
   };

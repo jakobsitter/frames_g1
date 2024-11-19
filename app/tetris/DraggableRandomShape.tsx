@@ -1,14 +1,14 @@
 import Shape from "./Shape";
 //import { generateRandomBlockShape } from './helpers/randomShape.jsx';
 //import { arraysEqual } from "./helpers/arrayEquals.jsx";
-const DraggableRandomShape = (props) => {
+const DraggableRandomShape = (props:any) => {
   //const combinedCollected = [...props.customShapes];
   return (
     <>
-    <div className={'draggableShapes-container'}>
+    <div className={props.shapesVisible ? 'draggableShapes-container visible' : 'draggableShapes-container'}>
       {
         props.shapes &&
-        props.shapes.map((shape, index) => (
+        props.shapes.map((shape:any, index:any) => (
           <Shape
             key={index}
             index={index}

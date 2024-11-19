@@ -3,11 +3,10 @@ import Grid from "./Grid";
 
 export async function fetchImage(state:any) {
   const { renderToString } = await import("react-dom/server");
-  const res = await import("../../pages/api/pup/index");
     // Create an offscreen div to render the Grid component
 
     // Create a root using React 18's createRoot API
-    const html = renderToString(<Grid g={state.grid} cellN={state.piece} activeShape={state.activeShape} shapes={state. shapes} score={state.score} state={state} />);
+    const html = renderToString(<Grid g={state.grid} cellN={state.piece} activeShape={state.activeShape} shapes={state.shapes} score={state.score} state={state} shapesVisible={state.shapesVisible} />);
     //console.log(html)
  // Render the Grid component
 
@@ -24,7 +23,8 @@ export async function fetchImage(state:any) {
 //      console.log(response)
       if (response.ok) {
         const data = await response.json();
-        const imageUrl = data.image;
+        const imageUrl = data.imagePath;
+        console.log(imageUrl)
         return imageUrl;
       } else {
         console.error("Failed to take screenshot:", response.statusText);
