@@ -48,7 +48,7 @@ return (
                       key={cellIndex} 
                       className={`grid-cell ${cell === 0 ? '' : 'filled'} ${cell[1] == 'house' && 'house'}`} 
                       style={cell === 0 ? undefined : { 
-                        backgroundImage: 'url(http://198.211.100.67:3002/'+cell[2]+')',
+                        backgroundImage: 'url(https://tetris.jakobseeder.pro/'+cell[2]+')',
                         backgroundColor: cell[4]
                       }}
                     >
@@ -84,7 +84,7 @@ function ActiveShapeOverlay({activeShape}:{activeShape:any}) {
   }
   console.log('active shape in overlay:', activeShape.shape)
   const filename = arrayToFilename(activeShape.shape);
-  const imagePath = `http://198.211.100.67:3002/shapes_bitmapped2/ shape_${filename}.png`;
+  const imagePath = `https://tetris.jakobseeder.pro/shapes_bitmapped2/ shape_${filename}.png`;
   const longestSide = Math.max(
     activeShape.shape.length, // Height of the shape
     ...activeShape.shape.map((row: any) => row.length) // Width of the shape (find the longest row)

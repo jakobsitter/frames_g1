@@ -13,7 +13,7 @@ export async function fetchImage(state:any) {
     try {
       // Wait for the component to fully render (add a slight delay if needed)
 //      const response = await (await res.handler()).json() 
-      const response = await fetch("http://198.211.100.67:3001/screenshot", {
+      const response = await fetch("https://tetris-image.jakobseeder.pro/screenshot", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

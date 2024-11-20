@@ -124,7 +124,7 @@ function Shape(props:any) {
       return count + row.reduce((rowCount:any, cell:any) => rowCount + (cell === 1 ? 1 : 0), 0);
     }, 0);
   const filename = arrayToFilename(props.shape);
-  const imagePath = `http://198.211.100.67:3002/shapes_bitmapped2/ shape_${filename}.png`;
+  const imagePath = `https://tetris.jakobseeder.pro/shapes_bitmapped2/ shape_${filename}.png`;
   const price = numCells * props.customSettings.pointsPerCell;
   const r_shape = rotateShapeArray(props.shape, 0); // Rotate the shape array
   const size = getShapeDimensions(props.shape);
