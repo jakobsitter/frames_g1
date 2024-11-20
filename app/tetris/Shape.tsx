@@ -20,7 +20,7 @@ export const renderShape = (shape:any, x:any, y:any, cellSize:any, border:any) =
         row.map((cell:any, j:any) => {
           if (cell === 1) {
             // Construct the path based on shapeName and cell position within the shape
-            const cellImage = `http://localhost:3000/cells/${shapeName}_cells/cell_${i}_${j}.png`;
+            const cellImage = `http://198.211.100.67:3002/cells/${shapeName}_cells/cell_${i}_${j}.png`;
             
             const rectStyle = {
               position: 'absolute' as 'absolute',
@@ -124,7 +124,7 @@ function Shape(props:any) {
       return count + row.reduce((rowCount:any, cell:any) => rowCount + (cell === 1 ? 1 : 0), 0);
     }, 0);
   const filename = arrayToFilename(props.shape);
-  const imagePath = `http://localhost:3000/shapes_bitmapped2/ shape_${filename}.png`;
+  const imagePath = `http://198.211.100.67:3002/shapes_bitmapped2/ shape_${filename}.png`;
   const price = numCells * props.customSettings.pointsPerCell;
   const r_shape = rotateShapeArray(props.shape, 0); // Rotate the shape array
   const size = getShapeDimensions(props.shape);
