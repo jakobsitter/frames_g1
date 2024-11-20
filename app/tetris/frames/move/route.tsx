@@ -38,6 +38,7 @@ const imageData = {
     image: await fetchImage(updatedState),   
     imageOptions: { aspectRatio: '1:1'},
     state: updatedState,
+    version: "vNext",
     textInput: 'Choose a number on the grid',
     buttons: [
       // With query params

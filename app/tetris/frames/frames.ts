@@ -96,6 +96,8 @@ export const frames = createFrames(
       imagesRoute: "/images", 
       secret: "SOME_SECRET_VALUE", 
     }), 
+    //openframes()
+
     /*
     farcasterHubContext({
       hubHttpUrl: "https://nemes.farcaster.xyz:2281",

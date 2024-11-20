@@ -58,6 +58,7 @@ export const POST = frames(async (ctx:any) => {
     image: await fetchImage(updatedState),
     imageOptions: { aspectRatio: '1:1'},
     state: updatedState,
+    version: "vNext",
     //textInput: 'Choose a number',
     buttons: [
       // With query params

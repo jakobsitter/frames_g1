@@ -17,6 +17,7 @@ export const POST = frames(async (ctx:any) => {
     image: await fetchImage(updatedState),
     imageOptions: { aspectRatio: '1:1'},
     state: updatedState,
+    version: "vNext",
     textInput: updatedState.turn == updatedState.activePlayer ? 'Choose Shape 1-3' : undefined,
     buttons: [
       // With query params

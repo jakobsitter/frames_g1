@@ -34,6 +34,7 @@ const handler = frames(async (ctx:any) => {
     imageOptions: { aspectRatio: '1:1'},
     textInput: !readyToPlay ? screen == 'userInput' ? 'Enter UserId' : 'Enter GameID' : undefined,
     state: updatedState,
+    version: "vNext",
     buttons: [
       // With query params
       !readyToPlay ?
