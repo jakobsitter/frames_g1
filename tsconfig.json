@@ -5,7 +5,11 @@
     "esModuleInterop": true,
     "incremental": false,
     "isolatedModules": true,
-    "lib": ["es2022", "DOM", "DOM.Iterable"],
+    "lib": [
+      "es2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "moduleDetection": "force",
     "moduleResolution": "Bundler",
@@ -17,21 +21,37 @@
       }
     ],
     "paths": {
-      "@/*": ["./@/*"]
+      "@/*": [
+        "./@/*"
+      ]
     },
     "jsx": "preserve",
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "strict": true,
+    "strict": false,
     "target": "ES2022",
-    "allowJs": true
+    "allowJs": true,
+    "strictNullChecks": false
   },
   "include": [
     "next-env.d.ts",
     "next.config.js",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "app/tetris/frames/chooseShape/route.jsx",
+    "app/tetris/Grid.jsx",
+    "app/tetris/util/getGame.jsx",
+    "app/tetris/GridSVG.jsx",
+    "app/tetris/GridHelpers.jsx",
+    "app/tetris/Grid.jsx",
+    "app/tetris/frames/frames.jsx",
+    "app/tetris/frames/route.jsx",
+    "app/tetris/frames/placedShape/route.jsx",
+    "app/tetris/frames/move/route.jsx",
+    "app/tetris/frames/chooseShape/route.jsx"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }
