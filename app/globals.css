@@ -1,5 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Press+Start+2P&display=swap');
-
+@font-face {
+  font-family: 'Luminari';
+  src: url('Luminari-Regular.ttf');
+}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -169,11 +172,10 @@
   color: white;
   flex: 1;
   position: absolute;
-  background: rgb(31 31 31 / 70%);
+  background: rgba(0, 0, 0, 0.5);
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  backdrop-filter: blur(5px);
   width: 80%;
   border-radius: 5px;
   border: 0.5px gray dashed;
@@ -230,7 +232,7 @@
   transform-origin: center;
 }
 .active {
-  border: 5px red solid;
+  border: 1px red solid;
 }
 .score {
   color: white;
@@ -276,5 +278,8 @@
   z-index:9999;
 }
 .activeShapeOverlay > div > div {
-  background-color: aqua;
+  background-color: none;
+  background-image: none !important;
+  opacity: 1;
+
 }

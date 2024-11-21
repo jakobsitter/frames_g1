@@ -1,7 +1,14 @@
 import { rotateShapeArray } from './helpers/rotateShapeArray';
 import { arrayToFilename } from "./helpers/arrayToFilename";
 
-export const renderShape = (shape:any, x:any, y:any, cellSize:any, border:any) => {
+export const renderShape = (
+  shape: any,
+  x: any,
+  y: any,
+  cellSize: any,
+  border: any,
+  color: any
+) => {
   const shapeArray = arrayToFilename(shape);
   const shapeSize = getShapeDimensions(shape);
   const shapeName = 'shape_' + shapeArray;
@@ -16,23 +23,36 @@ export const renderShape = (shape:any, x:any, y:any, cellSize:any, border:any) =
 
   return (
     <div style={parentStyle}>
-      {shape.map((row:any, i:any) =>
-        row.map((cell:any, j:any) => {
+      {shape.map((row: any, i: any) =>
+        row.map((cell: any, j: any) => {
           if (cell === 1) {
+            // Determine which sides need borders
+            const hasTop = i === 0 || shape[i - 1]?.[j] !== 1;
+            const hasBottom = i === shape.length - 1 || shape[i + 1]?.[j] !== 1;
+            const hasLeft = j === 0 || shape[i]?.[j - 1] !== 1;
+            const hasRight = j === row.length - 1 || shape[i]?.[j + 1] !== 1;
+
             // Construct the path based on shapeName and cell position within the shape
             const cellImage = `http://198.211.100.67:3002/cells/${shapeName}_cells/cell_${i}_${j}.png`;
-            
+
             const rectStyle = {
               position: 'absolute' as 'absolute',
               left: j * cellSize,
               top: i * cellSize,
               width: cellSize,
               height: cellSize,
-              backgroundImage: `url(${cellImage})`, // Set the background image
+              backgroundImage: `url(${cellImage})`,
               backgroundSize: 'cover',
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',
-              border: `${border}px solid red` // Optional: add a border if needed
+              borderTop: hasTop ? `${border}px solid ${color || 'red'}` : 'none',
+              borderBottom: hasBottom
+                ? `${border}px solid ${color || 'red'}`
+                : 'none',
+              borderLeft: hasLeft ? `${border}px solid ${color || 'red'}` : 'none',
+              borderRight: hasRight
+                ? `${border}px solid ${color || 'red'}`
+                : 'none',
             };
 
             return <div key={`${i}-${j}`} style={rectStyle}></div>;
@@ -43,6 +63,7 @@ export const renderShape = (shape:any, x:any, y:any, cellSize:any, border:any) =
     </div>
   );
 };
+
 
 
 export const RenderSVGShape = (shape:any, x:any, y:any, cellSize:any, color:any, key:any) => {
@@ -134,7 +155,7 @@ function Shape(props:any) {
     <>
     <div className='shape_outer'>
         <div className={props.activeShape == props.index ? 'shape active' : 'shape'}>
-            {renderShape(props.shape, 0, 0, 15, 0.25)}
+            {renderShape(props.shape, 0, 0, 15, 0.25, null)}
 
        </div>
       <div className='tooltip'>

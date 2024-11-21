@@ -11,7 +11,7 @@ export const POST = frames(async (ctx:any) => {
     ...currentState,
     ...gameState,
     piece: ctx.message?.inputText,
-    shapesVisible: currentState.turn == currentState.activePlayer ? true : false
+    shapesVisible: gameState.turn == currentState.activePlayer ? true : false
   };
   return {
     image: await fetchImage(updatedState),

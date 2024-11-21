@@ -14,6 +14,7 @@ interface GridProps {
 }
 function Grid({g, cellN, activeShape, shapes, score, state, shapesVisible}: GridProps) {
   console.log(g)
+  const activePlayer = state.players.find(player => player.adr === state.activePlayer);
   const rowIndex = Math.floor((cellN - 1) / 7); // Row index based on the cell number
   const cellIndex = (cellN - 1) % 7;
   //console.log(cellN, rowIndex, cellIndex)
@@ -36,7 +37,7 @@ return (
       </div>
     </div>
     <div className="grid-container">
-    {activeShape !=undefined && <ActiveShapeOverlay activeShape={shapes[activeShape]} />}
+    {activeShape !=undefined && <ActiveShapeOverlay activeShape={shapes[activeShape]} activePlayer={activePlayer} />}
 
         {g.map((line:any, rowIndex:any) => (
             <div key={rowIndex} 
@@ -78,7 +79,7 @@ return (
     </div>
 );
 }
-function ActiveShapeOverlay({activeShape}:{activeShape:any}) {
+function ActiveShapeOverlay({activeShape, activePlayer}:{activeShape:any, activePlayer:any}) {
   if (!activeShape?.shape) {
     return null; // Return null if activeShape or activeShape.shape is undefined
   }
@@ -91,7 +92,7 @@ function ActiveShapeOverlay({activeShape}:{activeShape:any}) {
   );
   return(
     <div className={'activeShapeOverlay'}>
-            {renderShape(activeShape.shape, 0, 0, 35, .5)}
+            {renderShape(activeShape.shape, 0, 0, 35, 1, activePlayer ? activePlayer.color : null)}
        </div>
   )
 }

@@ -34,7 +34,7 @@ export async function getGame(gameId: string, adr: any) {
             // If player does not exist, push them to the players array
             game.players.push({
                 adr,
-                score: 0,
+                score: INIT_SCORE,
                 status: 'pending',
                 color: randomColor({luminosity: 'dark'})
             });
