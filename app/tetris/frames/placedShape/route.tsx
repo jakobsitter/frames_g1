@@ -6,8 +6,8 @@ import { placeShape } from '../../placeShape'
 import { checkShapeState } from "../../helpers/checkShapeState";
 import {setGrid,updateShapes,levelHandler, getGameState, modifyScore} from '../../util/getGame'
 
-const pointsPerCell = 5;
 export const POST = frames(async (ctx:any) => {
+  const pointsPerCell = 5;
   const currentState = ctx.state;
   const y = Math.floor((ctx.message.inputText - 1) / 7); // Row index based on the cell number
   const x = (ctx.message.inputText - 1) % 7;
@@ -41,7 +41,7 @@ export const POST = frames(async (ctx:any) => {
   const updatedState = {
     ...currentState,
     ...gameState,
-    pos: { x: currentState.pos.x, y: currentState.pos.y - 30 },
+    //pos: { x: currentState.pos.x, y: currentState.pos.y - 30 },
     piece: ctx.message?.inputText,
     grid: newGrid.grid,
     activeShape: newGrid.placed ? null : currentState.activeShape,
@@ -53,7 +53,6 @@ export const POST = frames(async (ctx:any) => {
     shapesVisible: false
 
   };
-  
   return {
     image: await fetchImage(updatedState),
     imageOptions: { aspectRatio: '1:1'},

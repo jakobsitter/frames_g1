@@ -16,8 +16,8 @@ function Grid({g, cellN, activeShape, shapes, score, state, shapesVisible}: Grid
   console.log(g)
   const rowIndex = Math.floor((cellN - 1) / 7); // Row index based on the cell number
   const cellIndex = (cellN - 1) % 7;
-  console.log(cellN, rowIndex, cellIndex)
-  console.log('activeshape:', activeShape, shapes, shapes[activeShape])
+  //console.log(cellN, rowIndex, cellIndex)
+  //console.log('activeshape:', activeShape, shapes, shapes[activeShape])
 return (
   <div className='grid-wrapper'>
     <div className='stats'>

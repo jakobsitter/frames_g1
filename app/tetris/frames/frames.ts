@@ -74,7 +74,8 @@ export const frames = createFrames(
   {
   basePath: "/tetris",
   baseUrl: appURL(),
-  debug: process.env.NODE_ENV === "development",
+  debug: true,
+  //  debug: process.env.NODE_ENV === "development",
   imagesRoute: '/images',
   initialState: {
     grid: newGrid(20),

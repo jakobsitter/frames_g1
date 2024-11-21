@@ -21,29 +21,28 @@
     "express": "^4.21.1",
     "frames.js": "^0.19.0",
     "html-to-image": "^1.11.11",
+    "next": "^14.2.18",
     "node-html-to-image": "^5.0.0",
     "puppeteer": "^23.3.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
     "randomcolor": "^0.6.2",
     "react": "^18.2.0",
-    "next": "^14.2.18",
     "react-dom": "^18.2.0",
     "sharp": "^0.33.5",
     "socket.io-client": "^4.8.0",
     "svg64": "^2.0.0",
     "tailwindcss-animate": "^1.0.7",
-    "valid-url": "^1.0.9"
-  },
-  "peerDependencies": {
+    "valid-url": "^1.0.9",
+    "viem": "^2.21.48"
   },
   "engines": {
     "node": ">=18.17.0"
   },
   "devDependencies": {
     "@frames.js/debugger": "^0.3.11",
-    "@types/node": "^18.17.0",
-    "@types/react": "^18.2.0",
+    "@types/node": "^18.19.64",
+    "@types/react": "^18.3.12",
     "@types/react-dom": "^18.2.0",
     "autoprefixer": "^10.0.1",
     "concurrently": "^8.2.2",
@@ -53,6 +52,6 @@
     "is-port-reachable": "^4.0.0",
     "postcss": "^8",
     "tailwindcss": "^3.3.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.6.3"
   }
 }
