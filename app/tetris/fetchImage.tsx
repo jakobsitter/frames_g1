@@ -1,19 +1,42 @@
 import Grid from "./Grid";
+import Leaderboard from "./Leaderboard";
 //import { renderToString } from 'react-dom/server';
 
-export async function fetchImage(state:any) {
+export async function fetchImage(state:any, screen:string) {
+  //const url = 'https://tetris-image.jakobseeder.pro'
+  const url = 'http://localhost:3001'
+
   const { renderToString } = await import("react-dom/server");
     // Create an offscreen div to render the Grid component
 
     // Create a root using React 18's createRoot API
-    const html = renderToString(<Grid g={state.grid} cellN={state.piece} activeShape={state.activeShape} shapes={state.shapes} score={state.score} state={state} shapesVisible={state.shapesVisible} />);
+    let elem;
+
+    if (screen === 'grid') {
+      elem = (
+        <Grid
+          g={state.grid}
+          cellN={state.piece}
+          activeShape={state.activeShape}
+          shapes={state.shapes}
+          score={state.score}
+          state={state}
+          shapesVisible={state.shapesVisible}
+        />
+      );
+    } else if (screen === 'leaderboard') {
+      elem = <Leaderboard state={state} />;
+    } else {
+      elem = <div className='grid-wrapper'>No screen selected</div>; // Fallback for invalid `screen` values
+    }
+    const html = renderToString(elem);
     //console.log(html)
  // Render the Grid component
 
     try {
       // Wait for the component to fully render (add a slight delay if needed)
 //      const response = await (await res.handler()).json() 
-      const response = await fetch("https://tetris-image.jakobseeder.pro/screenshot", {
+      const response = await fetch(url+'/screenshot', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

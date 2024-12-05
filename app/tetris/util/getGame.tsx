@@ -19,24 +19,36 @@ type Game = {
         color: string
     }>;
 };
-
+function generateUniqueColor(assignedColors: string[]): string {
+    let newColor;
+    do {
+        newColor = randomColor({ luminosity: 'dark' });
+    } while (assignedColors.includes(newColor)); // Ensure the color is unique
+    return newColor;
+}
 export async function getGame(gameId: string, adr: any) {
     // Retrieve the game from your key-value store
-    let game = await kv.get(gameId) as Game | null;
-    
+    let game = (await kv.get(gameId)) as Game | null;
+
     if (game) {
         console.log('game exists');
 
         // Check if the player already exists in the players array
-        const playerExists = game.players.some((player: { adr: any }) => player.adr === adr);
+        const playerExists = game.players.some((player) => player.adr === adr);
 
         if (!playerExists) {
-            // If player does not exist, push them to the players array
+            // Get all currently assigned colors
+            const assignedColors = game.players.map((player) => player.color);
+
+            // Generate a unique color
+            const uniqueColor = generateUniqueColor(assignedColors);
+
+            // Add the new player with a unique color
             game.players.push({
                 adr,
                 score: INIT_SCORE,
                 status: 'pending',
-                color: randomColor({luminosity: 'dark'})
+                color: uniqueColor,
             });
 
             // Update the game with the new player
@@ -53,8 +65,8 @@ export async function getGame(gameId: string, adr: any) {
     const grid = newGrid(20);
     const shapes = checkShapeState([]);
     const turn = adr;
-    const level = 0;
-    const round = 0;
+    const level = 1;
+    const round = 1;
 
     // Create the new game with the initialized players array
     const newGame: Game = {
@@ -64,17 +76,19 @@ export async function getGame(gameId: string, adr: any) {
         turn,
         level,
         round,
-        players: [{
-            adr,
-            score: INIT_SCORE,
-            status: 'pending',
-            color: randomColor({ luminosity: 'dark' })
-        }],
+        players: [
+            {
+                adr,
+                score: INIT_SCORE,
+                status: 'pending',
+                color: randomColor({ luminosity: 'dark' }),
+            },
+        ],
     };
 
     // Set the new game in the key-value store
-    const setNewGame = await kv.set(gameId, newGame);
-    console.log('new game:', setNewGame);
+    await kv.set(gameId, newGame);
+    console.log('new game:', newGame);
 
     return newGame;
 }
@@ -98,45 +112,58 @@ export async function updateShapes(gameId:string, shapes:any) {
     console.log('setting shapes:', setNewShapes)
     return setNewShapes?.shapes;
 }
-export async function levelHandler(gameId:string) {
+export async function levelHandler(gameId: string) {
     const currentGame = await kv.get<Game>(gameId);
-    let currentRound = Number(currentGame?.round);
-    let currentGrid = currentGame?.grid;
-    let level = Number(currentGame?.level);
-    if(currentRound < Number(MAX_ROUNDS)) {
+
+    if (!currentGame) {
+        console.error('Game not found!');
+        return null;
+    }
+
+    let currentRound = Number(currentGame.round);
+    let currentGrid = currentGame.grid;
+    let level = Number(currentGame.level);
+
+    if (currentRound < MAX_ROUNDS) {
         currentRound += 1;
     } else {
         currentRound = 0;
         level += 1;
         currentGrid = newGrid(20);
 
+        // Generate new shapes for the new level
+        const newShapes = checkShapeState([]); // Replace this with logic to generate your new shapes
+        currentGame.shapes = newShapes; // Replace current shapes with the new ones
     }
-     // Switch turn to the other player
-     const currentTurn = currentGame?.turn;
-     const players = currentGame?.players;
- 
-     // Find the next player (the player who is not currently the one in turn)
-     let nextPlayer = players?.find(player => player.adr !== currentTurn)?.adr;
- 
-     if (!nextPlayer) {
-         console.error('Unable to switch turn, no other player found.');
-         nextPlayer = currentGame?.turn;
-     }
- 
-     // Update the game properties
-     const updatedProperties = {
-         level: level,
-         round: currentRound,
-         grid: currentGrid,
-         turn: nextPlayer // Update the turn to the other player
-     };
- 
-     // Save the updated game state
-     const setNewLevel = await updateGameProperty(gameId, updatedProperties);
-     console.log('setting level and switching turn:', setNewLevel);
- 
-     return setNewLevel;
+
+    // Switch turn to the next player
+    const currentTurn = currentGame.turn;
+    const players = currentGame.players;
+
+    // Find the next player (the player who is not currently in turn)
+    let nextPlayer = players.find((player) => player.adr !== currentTurn)?.adr;
+
+    if (!nextPlayer) {
+        console.error('Unable to switch turn, no other player found.');
+        nextPlayer = currentGame.turn; // Fallback to the current player
+    }
+
+    // Update the game properties
+    const updatedProperties = {
+        level: level,
+        round: currentRound,
+        grid: currentGrid,
+        shapes: currentGame.shapes, // Ensure shapes are included in the update
+        turn: nextPlayer, // Update the turn to the other player
+    };
+
+    // Save the updated game state
+    const setNewLevel = await updateGameProperty(gameId, updatedProperties);
+    console.log('Setting new level and switching turn:', setNewLevel);
+
+    return setNewLevel;
 }
+
 
 async function updateGameProperty(gameId: string, newProperty: Partial<Game>): Promise<Game | null> {
     // Step 1: Get the current object from KV
@@ -210,4 +237,43 @@ export async function getPlayerColor(gameId: string, adr: any): Promise<string |
         console.error('Player not found in game!');
         return null;
     }
+}
+
+export async function buyShape(gameId: string, adr: any): Promise<Game | null> {
+    // Retrieve the game from KV store
+    const game = await kv.get<Game>(gameId);
+
+    if (!game) {
+        console.error('Game not found!');
+        return null;
+    }
+
+    // Find the player in the players array
+    const player = game.players.find((player) => player.adr === adr);
+
+    if (!player) {
+        console.error('Player not found in game!');
+        return null;
+    }
+
+    const shapeCost = 15;
+
+    // Check if the player has enough score to buy a shape
+    if (player.score < shapeCost) {
+        console.error('Insufficient score to buy a shape!');
+        return null;
+    }
+
+    // Deduct the cost from the player's score
+    player.score -= shapeCost;
+
+    // Add a new shape to the game
+    const newShape = checkShapeState([]); // Replace with your shape generation logic
+    game.shapes.push(newShape);
+
+    // Save the updated game state back to KV
+    await kv.set(gameId, game);
+
+    console.log(`Player ${adr} purchased a shape for $${shapeCost}. Remaining score: ${player.score}`);
+    return game;
 }

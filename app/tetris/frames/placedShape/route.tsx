@@ -54,7 +54,7 @@ export const POST = frames(async (ctx:any) => {
 
   };
   return {
-    image: await fetchImage(updatedState),
+    image: await fetchImage(updatedState, updatedState.level !== currentState.level ? 'leaderboard' : 'grid'),
     imageOptions: { aspectRatio: '1:1'},
     state: updatedState,
     version: "vNext",

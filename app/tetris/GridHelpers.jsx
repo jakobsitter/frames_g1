@@ -233,7 +233,7 @@ function generateRandomBlockShape(minWidth, maxWidth, minHeight, maxHeight) {
               for (let j = 0; j < shape[i].length; j++) {
                 if (shape[i][j] === 1) {
                   //random value number
-                  const cellImage = `/cells/${shapeName}_cells/cell_${i}_${j}.png`;
+                  const cellImage = `${shapeName}_cells/cell_${i}_${j}.png`;
                   const rNum = Math.floor(Math.random() * 100);
                   const newX = x + j;
                   const newY = y + i;

@@ -25,7 +25,7 @@ const handler = frames(async (ctx:any) => {
   };
   
   return {
-    image: readyToPlay ? await fetchImage(updatedState) : 
+    image: readyToPlay ? await fetchImage(updatedState, 'grid') : 
     (
       <div tw="bg-purple-800 text-white w-full h-full justify-center items-center flex text-[48px]">
         {screen == 'userInput' ? 'Enter Username' : 'Logged in as '+updatedState.activePlayer+'. Enter Game ID to play.'}

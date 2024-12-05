@@ -14,7 +14,7 @@ export const POST = frames(async (ctx:any) => {
     shapesVisible: gameState.turn == currentState.activePlayer ? true : false
   };
   return {
-    image: await fetchImage(updatedState),
+    image: await fetchImage(updatedState, 'grid'),
     imageOptions: { aspectRatio: '1:1'},
     state: updatedState,
     version: "vNext",

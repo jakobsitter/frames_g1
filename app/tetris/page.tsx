@@ -5,6 +5,7 @@ import { Frame } from "../components/Frame";
 import Grid from './Grid';
 import { newGrid } from "./GridHelpers";
 import { checkShapeState } from "./helpers/checkShapeState";
+import Leaderboard from "./Leaderboard";
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "Frames.js Multi Page Example",
@@ -30,12 +31,12 @@ export default async function Home() {
     activePlayer: '',
     players: [{
       adr: 'Jakob',
-      score: 0,
+      score: 2323,
       status: 'pending',
       },
       {
         adr: 'Simon',
-        score: 0,
+        score: 5423,
         status: 'pending',
         },
     ]
@@ -47,6 +48,8 @@ export default async function Home() {
       url={createExampleURL("/tetris/frames")}
     />
     <Grid g={state.grid} cellN={state.piece} activeShape={0} shapes={state.shapes} score={state.score} state={state} shapesVisible={true}  />
+    <br/>
+    <Leaderboard state={state} />
     </>
   );
 }

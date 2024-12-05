@@ -88,6 +88,7 @@
 .grid-wrapper .stats {
   display: flex;
   flex: ;
+  
 }
 .grid-container {
   display: inline-flex;
@@ -248,7 +249,7 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  padding: 5px;
+  padding: 10px;
   color: white;
   font-family: 'Luminari';
   font-weight: 100;
@@ -274,7 +275,7 @@
   position: absolute;
   left: 0%;
   top: 0%;
-  overflow: hidden;
+  overflow: ;
   z-index:9999;
 }
 .activeShapeOverlay > div > div {
@@ -282,4 +283,54 @@
   background-image: none !important;
   opacity: 1;
 
+}
+blockquote, dl, dd, h1, h2, h3, h4, h5, h6, hr, figure, p, pre {
+  margin: 0;
+}
+.leaderboard-outer {
+  padding: 0px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.leaderboard-outer h2 {
+  font-family: 'Press Start 2P';
+  font-size: 8px;
+  text-align: center;
+  padding-top: 20px;
+}
+.leaderboard-table-outer {
+  background: rgba(255, 255, 255, 0.05);
+  border-top: 0.5px dashed gray;
+  padding: 10px;
+
+}
+.leaderboard-outer .leaderboard-table {
+  width: 100%;
+  text-align: left;
+  font-family: 'Luminari';
+  font-size: 5px;
+  color: white;
+}
+.leaderboard-outer .leaderboard-table th, td {
+  padding: 2.5px;
+}
+.winner-section .name {
+  font-family: 'Press Start 2P';
+  
+}
+.winner-section {
+  text-align: center;
+  font-family: 'Luminari';
+  flex: 1;
+  align-content: center;
+}
+.winner-section .circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 100%;
+  border: 0.5px gray dashed;
+  text-align: center;
+  margin: 0 auto;
+  margin-bottom: 20px;
 }

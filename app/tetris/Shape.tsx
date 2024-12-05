@@ -7,7 +7,8 @@ export const renderShape = (
   y: any,
   cellSize: any,
   border: any,
-  color: any
+  color: any,
+  borderBetweenCells: boolean // New parameter to toggle behavior
 ) => {
   const shapeArray = arrayToFilename(shape);
   const shapeSize = getShapeDimensions(shape);
@@ -26,33 +27,38 @@ export const renderShape = (
       {shape.map((row: any, i: any) =>
         row.map((cell: any, j: any) => {
           if (cell === 1) {
-            // Determine which sides need borders
-            const hasTop = i === 0 || shape[i - 1]?.[j] !== 1;
-            const hasBottom = i === shape.length - 1 || shape[i + 1]?.[j] !== 1;
-            const hasLeft = j === 0 || shape[i]?.[j - 1] !== 1;
-            const hasRight = j === row.length - 1 || shape[i]?.[j + 1] !== 1;
-
-            // Construct the path based on shapeName and cell position within the shape
-            const cellImage = `http://198.211.100.67:3002/cells/${shapeName}_cells/cell_${i}_${j}.png`;
-
+            // Determine border logic based on mode
             const rectStyle = {
               position: 'absolute' as 'absolute',
               left: j * cellSize,
               top: i * cellSize,
               width: cellSize,
               height: cellSize,
-              backgroundImage: `url(${cellImage})`,
+              backgroundImage: `url(${process.env.NEXT_PUBLIC_BASE_URL}/cells_r/${shapeName}_cells/cell_${i}_${j}.png)`,
+              boxSizing: 'border-box',
               backgroundSize: 'cover',
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',
-              borderTop: hasTop ? `${border}px solid ${color || 'red'}` : 'none',
-              borderBottom: hasBottom
+              borderTop: borderBetweenCells
                 ? `${border}px solid ${color || 'red'}`
-                : 'none',
-              borderLeft: hasLeft ? `${border}px solid ${color || 'red'}` : 'none',
-              borderRight: hasRight
+                : (i === 0 || shape[i - 1]?.[j] !== 1) 
+                  ? `${border}px solid ${color || 'red'}` 
+                  : 'none',
+              borderBottom: borderBetweenCells
                 ? `${border}px solid ${color || 'red'}`
-                : 'none',
+                : (i === shape.length - 1 || shape[i + 1]?.[j] !== 1) 
+                  ? `${border}px solid ${color || 'red'}` 
+                  : 'none',
+              borderLeft: borderBetweenCells
+                ? `${border}px solid ${color || 'red'}`
+                : (j === 0 || shape[i]?.[j - 1] !== 1) 
+                  ? `${border}px solid ${color || 'red'}` 
+                  : 'none',
+              borderRight: borderBetweenCells
+                ? `${border}px solid ${color || 'red'}`
+                : (j === row.length - 1 || shape[i]?.[j + 1] !== 1) 
+                  ? `${border}px solid ${color || 'red'}` 
+                  : 'none',
             };
 
             return <div key={`${i}-${j}`} style={rectStyle}></div>;
@@ -63,6 +69,7 @@ export const renderShape = (
     </div>
   );
 };
+
 
 
 
@@ -155,7 +162,7 @@ function Shape(props:any) {
     <>
     <div className='shape_outer'>
         <div className={props.activeShape == props.index ? 'shape active' : 'shape'}>
-            {renderShape(props.shape, 0, 0, 15, 0.25, null)}
+            {renderShape(props.shape, 0, 0, 15, 0.25, null, true)}
 
        </div>
       <div className='tooltip'>

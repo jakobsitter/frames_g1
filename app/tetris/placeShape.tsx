@@ -42,7 +42,7 @@ export const placeShape = async(shape:any, grid:any, gridX:any, gridY:any, gameI
                     const newY = gridY + i;
 
                     // Construct the image path based on shape position
-                    const cellImage = `/cells/${shapeName}_cells/cell_${i}_${j}.png`;
+                    const cellImage = `${shapeName}_cells/cell_${i}_${j}.png`;
 
                     // Place the image path in the grid instead of just a color
                     grid[newY][newX] = [1, 'userName', cellImage, 5, playerColor];

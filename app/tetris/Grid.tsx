@@ -28,7 +28,8 @@ return (
       </div>
       
       <div className="level-info">
-        <p>Round {state.round} / 12</p>
+      <p>Level {state.level}</p>
+      <p>Round {state.round} / 12</p>
       </div>
       
       <div className="player-info right">
@@ -49,7 +50,7 @@ return (
                       key={cellIndex} 
                       className={`grid-cell ${cell === 0 ? '' : 'filled'} ${cell[1] == 'house' && 'house'}`} 
                       style={cell === 0 ? undefined : { 
-                        backgroundImage: 'url(https://tetris.jakobseeder.pro/'+cell[2]+')',
+                        backgroundImage: `url(${process.env.NEXT_PUBLIC_BASE_URL}/cells_r/${cell[2]})`,
                         backgroundColor: cell[4]
                       }}
                     >
@@ -92,7 +93,7 @@ function ActiveShapeOverlay({activeShape, activePlayer}:{activeShape:any, active
   );
   return(
     <div className={'activeShapeOverlay'}>
-            {renderShape(activeShape.shape, 0, 0, 35, 1, activePlayer ? activePlayer.color : null)}
+            {renderShape(activeShape.shape, 0, 0, 35, 1, activePlayer ? activePlayer.color : null, false)}
        </div>
   )
 }
