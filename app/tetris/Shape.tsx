@@ -1,5 +1,6 @@
 import { rotateShapeArray } from './helpers/rotateShapeArray';
 import { arrayToFilename } from "./helpers/arrayToFilename";
+import { CSSProperties } from 'react';
 
 export const renderShape = (
   shape: any,
@@ -28,7 +29,7 @@ export const renderShape = (
         row.map((cell: any, j: any) => {
           if (cell === 1) {
             // Determine border logic based on mode
-            const rectStyle = {
+            const rectStyle : CSSProperties = {
               position: 'absolute' as 'absolute',
               left: j * cellSize,
               top: i * cellSize,

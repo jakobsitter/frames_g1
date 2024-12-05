@@ -25,7 +25,13 @@ export async function fetchImage(state:any, screen:string) {
         />
       );
     } else if (screen === 'leaderboard') {
-      elem = <Leaderboard state={state} />;
+      elem = <Leaderboard g={state.grid}
+      cellN={state.piece}
+      activeShape={state.activeShape}
+      shapes={state.shapes}
+      score={state.score}
+      state={state}
+      shapesVisible={state.shapesVisible} />;
     } else {
       elem = <div className='grid-wrapper'>No screen selected</div>; // Fallback for invalid `screen` values
     }

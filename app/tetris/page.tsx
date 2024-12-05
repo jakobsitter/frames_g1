@@ -49,7 +49,7 @@ export default async function Home() {
     />
     <Grid g={state.grid} cellN={state.piece} activeShape={0} shapes={state.shapes} score={state.score} state={state} shapesVisible={true}  />
     <br/>
-    <Leaderboard state={state} />
+    <Leaderboard g={state.grid} cellN={state.piece} activeShape={0} shapes={state.shapes} score={state.score} state={state} shapesVisible={true} />
     </>
   );
 }
